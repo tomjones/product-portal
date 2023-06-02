@@ -152,6 +152,10 @@ function ProductsTable({ products, setProducts, shelves }) {
       unilever_product_description: "GLB Wild Water Mint Extract GL (18kg pail)"
     },
     {
+      unilever_product_number: "67673897",
+      unilever_product_description: "GLB Coffee Extract GL"
+    },
+    {
       unilever_product_number: "67959718",
       unilever_product_description: "GLB Hydros Witch Hazel PH"
     },
