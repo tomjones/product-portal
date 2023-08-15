@@ -123,6 +123,10 @@ function ProductsTable({ products, setProducts, shelves }) {
       unilever_product_description: "GLB Spearmint Extract GL"
     },
     {
+      unilever_product_number: "67673898",
+      unilever_product_description: "GLB Clary Sage Extract GL"
+    },
+    {
       unilever_product_number: "67669962",
       unilever_product_description: "GLB Tamarind Extract GL"
     },
