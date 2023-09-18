@@ -334,6 +334,8 @@ function ImportProducts({ shelves, products, setProducts, pageTitle }) {
   // }
 
   function handleBulkPost() {
+    let invalidPendingProductRecords = pendingProducts.filter((pendingProduct) => !pendingProduct.shelf.id)
+
     fetch('/api/products', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
