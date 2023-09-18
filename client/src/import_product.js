@@ -311,14 +311,30 @@ function ImportProducts({ shelves, products, setProducts, pageTitle }) {
     },
   ];
 
-  function handleBulkPost() {
-    let invalidPendingProductRecords = pendingProducts.filter((pendingProduct) => !pendingProduct.shelf.id)
+  // function handleBulkPost() {
+  //   let invalidPendingProductRecords = pendingProducts.filter((pendingProduct) => !pendingProduct.shelf.id)
 
-    if (invalidPendingProductRecords.length !== 0) {
-      let message = invalidPendingProductRecords.length === 1 ? invalidPendingProductRecords.length + " product does" : invalidPendingProductRecords.length + " products do"
-      alert(`${message} not have a location. Use the Set Location dropdown to select each products location, then resubmit.`)
-    } else {
-      fetch('/api/products', {
+  //   if (invalidPendingProductRecords.length !== 0) {
+  //     let message = invalidPendingProductRecords.length === 1 ? invalidPendingProductRecords.length + " product does" : invalidPendingProductRecords.length + " products do"
+  //     alert(`${message} not have a location. Use the Set Location dropdown to select each products location, then resubmit.`)
+  //   } else {
+  //     fetch('/api/products', {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(pendingProducts)
+  //     })
+  //       .then(response => response.json())
+  //       .then(newProducts => {
+  //         let allProducts = [...products, newProducts]
+  //         setProducts(allProducts.flat())
+  //         setImportedProducts(newProducts)
+  //       })
+  //     setImportComplete(true)
+  //   }
+  // }
+
+  function handleBulkPost() {
+    fetch('/api/products', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(pendingProducts)
@@ -330,7 +346,6 @@ function ImportProducts({ shelves, products, setProducts, pageTitle }) {
           setImportedProducts(newProducts)
         })
       setImportComplete(true)
-    }
   }
 
   return (
