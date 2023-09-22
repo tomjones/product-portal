@@ -16,48 +16,22 @@ class ProductsController < ApplicationController
     end
   end
 
-  # def create
-  #   if params["_json"].kind_of? Array
-
-  #     new_products_array = Array.new
-  #     params["_json"].each do |product|
-  #       imported_product = Product.create(name: product[:name], lot_number: product[:lot_number], weight: product[:weight], shelf_id: product[:shelf][:id], sap_material_number: product[:sap_material_number], expiration_date: product[:expiration_date], complete: product[:complete])
-  #       new_products_array << imported_product
-  #     end
-
-  #     render json: new_products_array, status: :created
-  #   else
-  #     new_product = Product.create!(product_params)
-  #     render json: new_product, status: :created
-  #   end
-  # end
-
   def create
     if params["_json"].kind_of? Array
-      product_data = params["_json"].map do |product|
-        {
-          name: product[:name],
-          lot_number: product[:lot_number],
-          weight: product[:weight],
-          shelf_id: product[:shelf][:id],
-          sap_material_number: product[:sap_material_number],
-          expiration_date: product[:expiration_date],
-          complete: product[:complete],
-          created_at: Time.current, # these are necessary for the bulk insert
-          updated_at: Time.current  # to work properly
-        }
+
+      new_products_array = Array.new
+      params["_json"].each do |product|
+        imported_product = Product.create(name: product[:name], lot_number: product[:lot_number], weight: product[:weight], shelf_id: product[:shelf][:id], sap_material_number: product[:sap_material_number], expiration_date: product[:expiration_date], complete: product[:complete])
+        new_products_array << imported_product
       end
-  
-      # Bulk insert
-      Product.insert_all(product_data)
-      render json: product_data, status: :created
+
+      render json: new_products_array, status: :created
     else
       new_product = Product.create!(product_params)
       render json: new_product, status: :created
     end
   end
-  
-  
+
   # =>This is the new code to try for a speedier update<=
   # def create
   #   if params["_json"].kind_of? Array

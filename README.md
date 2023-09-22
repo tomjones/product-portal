@@ -51,3 +51,4 @@ There is a Procfile included with this project to run the backend and frontend s
  - [icons from FontAwesome](https://fontawesome.com/icons)
 
 
+sudo service postgresql start

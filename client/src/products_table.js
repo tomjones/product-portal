@@ -276,6 +276,8 @@ function ProductsTable({ products, setProducts, shelves }) {
     filteredProducts = products
   }
 
+  const notCheckedOutProducts = products.filter(product => !product.complete);
+
   // modal functions
   const handleProductModalClose = () => {
     setProductModalShow(false);
@@ -591,20 +593,19 @@ function ProductsTable({ products, setProducts, shelves }) {
     setProductFormValues(editFormValues)
     setProductModalShow(true)
   }
-
+  
   function handleCheckOutButton(record) {
-
     fetch(`/api/products/${record.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ complete: true })
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ complete: true })
     })
-      .then(response => response.json())
-      .then(checkedOutProduct => {
-        let updatedProductsArray = products.map((product) => product.id === checkedOutProduct.id ? checkedOutProduct : product)
-        setProducts(updatedProductsArray)
-      })
-  }
+    .then(response => response.json())
+    .then(checkedOutProduct => {
+        let updatedProductsArray = products.filter(product => product.id !== checkedOutProduct.id);
+        setProducts(updatedProductsArray);
+    })
+}
 
   function handleBarcodePrint(record) {
     // setBarcode(record.sap_material_number + ", " + record.name + ", " + record.lot_number);
@@ -613,12 +614,26 @@ function ProductsTable({ products, setProducts, shelves }) {
     setPrintModalShow(true)
   }
 
-  function handleUnileverForm(record) {
-    let weightPounds = record.weight * 2.2046
-    let formattedDate = moment(record.expiration_date).format("MM/DD/YYYY")
+  // function handleUnileverForm(record) {
+  //   let weightPounds = record.weight * 2.2046
+  //   let formattedDate = moment(record.expiration_date).format("MM/DD/YYYY")
 
-    setUnileverFormValues({ ...unileverFormValues, product_name: record.name, product_lot_number: record.lot_number, net_weight: weightPounds, expiration_date: formattedDate })
-    setUnileverModalShow(true)
+  //   setUnileverFormValues({ ...unileverFormValues, product_name: record.name, product_lot_number: record.lot_number, net_weight: weightPounds, expiration_date: formattedDate })
+  //   setUnileverModalShow(true)
+  // }
+
+  function handleUnileverForm(record) {
+    let weightPounds = (record.weight * 2.2046).toFixed(3);
+    let formattedDate = moment(record.expiration_date).format("MM/DD/YYYY");
+
+    setUnileverFormValues({ 
+        ...unileverFormValues, 
+        product_name: record.name, 
+        product_lot_number: record.lot_number, 
+        net_weight: parseFloat(weightPounds), // convert it back to a number, toFixed returns a string
+        expiration_date: formattedDate 
+    });
+    setUnileverModalShow(true);
   }
 
   function handleUnileverPrint(e) {
@@ -672,14 +687,14 @@ function ProductsTable({ products, setProducts, shelves }) {
         setFilterText('')
       }
     };
-
+    
     return (
       <FilterComponent onFilter={(e) => setFilterText(e.target.value)} onClear={clearFilterText} filterText={filterText} />
-    );
-  }, [filterText, resetPaginationToggle]);
-
-  return (
-    <Container>
+      );
+    }, [filterText, resetPaginationToggle]);
+    
+    return (
+      <Container>
 
       <Row className='mt-4'>
         <Col className='col-3'>
@@ -711,7 +726,7 @@ function ProductsTable({ products, setProducts, shelves }) {
         <Col className='col-12 mt-4'>
           {products ? <DataTable
             columns={columns}
-            data={filteredProducts}
+            data={notCheckedOutProducts}
             pagination
             paginationPerPage={100}
             paginationRowsPerPageOptions={[50, 100, 150, 200, 250]}
@@ -750,7 +765,7 @@ function ProductsTable({ products, setProducts, shelves }) {
               <Col className='col-6'>
                 <Form.Group className="mb-3">
                   <Form.Label>Weight (kg)</Form.Label>
-                  <Form.Control required type="number" name="weight" placeholder="Enter weight in kilograms" disabled={editing} value={productFormValues.weight} onChange={(e) => handleProductInput(e.target)} min="1" />
+                  <Form.Control required type="number" name="weight" placeholder="Enter weight in kilograms" disabled={editing} value={productFormValues.weight} onChange={(e) => handleProductInput(e.target)} min="1" step="0.1" />
                 </Form.Group>
               </Col>
               <Col className='col-6'>
@@ -903,11 +918,17 @@ function ProductsTable({ products, setProducts, shelves }) {
           <Container>
 
             <div className="d-flex justify-content-center py-3">
-              <Row className='barcode-wrap'>
+            <Row className='barcode-wrap'>
                 <div ref={printRef} id="product-tags" className='col-12 d-flex flex-column align-items-center pt-2 w-100'>
-                  <Barcode value={barcode.barcodeValue} text={barcode.productName + ", " + barcode.productSAPNumber + ", " + barcode.productLotNo + ", " + barcode.productLocation} lineColor='#00000' background='#FFFFFF' height={50} fontSize={6} />
+                    <Barcode value={barcode.barcodeValue} text={barcode.productName + ", " + barcode.productSAPNumber + ", " + barcode.productLotNo + ", " + barcode.productLocation} displayValue='false' lineColor='#00000' background='#FFFFFF' height={50} fontSize={6} />
+                    <p style={{ fontFamily: 'monospace', fontSize: '10px', lineHeight: '1', margin: '0px 0' }}>
+                        {barcode.productName}
+                    </p>
+                    <p style={{ fontFamily: 'monospace', fontSize: '10px', lineHeight: '1', margin: '0px 0', paddingBottom: '6px' }}>
+                        {barcode.productSAPNumber}, {barcode.productLotNo}, {barcode.productLocation}
+                    </p>
                 </div>
-              </Row>
+            </Row>
             </div>
 
             <Row>
