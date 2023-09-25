@@ -52,3 +52,11 @@ There is a Procfile included with this project to run the backend and frontend s
 
 
 sudo service postgresql start
+
+step by step, i hope this makes sense bc i am finishing up my lunch break now!
+add the new object with part number and description to unileverPartNumbers array in client/src/products_table.js
+delete the files that are currently in the public folder (should include a folder called static and some pngs and a few other files)
+in terminal cd into the client folder. from the terminal in the client folder, run command npm run build which will dump the compiled code into client/build folder
+move the content of the client/build folder to the public folder
+cd out of the client folder and back to the top level of the application. run rails s in the terminal, this starts up the rails server using the generated code from the public folder and you should be able to see your changes live
+should be good to deploy!
