@@ -191,7 +191,10 @@ function ProductsTable({ products, setProducts, shelves }) {
       unilever_product_number: "11130422",
       unilever_product_description: "KahlWax 6421 MB"
     },
-
+    {
+      unilever_product_number: "67673718",
+      unilever_product_description: "GLB Peach Extract GL"
+    }
   ]
 
   let unileverAddresses = [
