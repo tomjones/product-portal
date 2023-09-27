@@ -265,7 +265,7 @@ function ProductsTable({ products, setProducts, shelves }) {
 
   const usStateAbbreviations = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
 
-  let filteredProducts
+  let filteredProducts;
 
   if (filterText && filterText.split(", ").length == 3) {
     filteredProducts = products.filter(item => {
@@ -276,10 +276,9 @@ function ProductsTable({ products, setProducts, shelves }) {
     filteredProducts = products.filter(item => item.sap_material_number.includes(filterText) || item.lot_number.includes(filterText) || item.name.includes(filterText))
   }
   else if (filterText.length == 0) {
-    filteredProducts = products
+    filteredProducts = products.filter(product => !product.complete)
   }
 
-  const notCheckedOutProducts = products.filter(product => !product.complete);
 
   // modal functions
   const handleProductModalClose = () => {
@@ -729,7 +728,7 @@ function ProductsTable({ products, setProducts, shelves }) {
         <Col className='col-12 mt-4'>
           {products ? <DataTable
             columns={columns}
-            data={notCheckedOutProducts}
+            data={filteredProducts}
             pagination
             paginationPerPage={100}
             paginationRowsPerPageOptions={[50, 100, 150, 200, 250]}
