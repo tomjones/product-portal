@@ -29,6 +29,7 @@ function ImportProducts({ shelves, products, setProducts, pageTitle }) {
   const [pendingProducts, setPendingProducts] = useState([]);
   const [importedProducts, setImportedProducts] = useState([]);
   const [importComplete, setImportComplete] = useState(false);
+  const [barcodeComplete, setBarcodeComplete] = useState(false);
   const [bulkPrintModalShow, setBulkPrintModalShow] = useState(false);
   const [resetImportPaginationToggle, setResetImportPaginationToggle] = useState(false);
   // const [validated, setValidated] = useState(false)
@@ -58,6 +59,7 @@ function ImportProducts({ shelves, products, setProducts, pageTitle }) {
     setPendingProducts([]);
     setImportedProducts([]);
     setImportComplete(false);
+    setBarcodeComplete(false);
   }
 
   function getShelf(shelfId) {
@@ -209,8 +211,14 @@ function ImportProducts({ shelves, products, setProducts, pageTitle }) {
   const importedProductsBarcodes = importedProducts.map((importedProduct) => {
     let stringId = "00000000" + importedProduct.id.toString()
     return (
-      <div className='pt-2 d-flex justify-content-center' key={importedProduct.id}>
-        <Barcode value={stringId.slice(-8)} text={importedProduct.name + ", " + importedProduct.sap_material_number + ", " + importedProduct.lot_number + ", " + importedProduct.shelf.name} lineColor='#00000' background='#FFFFFF' height={50} textAlign="center" fontSize={6} />
+      <div className='col-12 d-flex flex-column align-items-center pt-2 w-100' key={importedProduct.id}>
+        <Barcode value={stringId.slice(-8)} text={importedProduct.name + ", " + importedProduct.sap_material_number + ", " + importedProduct.lot_number + ", " + importedProduct.shelf.name} displayValue='false' lineColor='#00000' background='#FFFFFF' height={50} textAlign="center" fontSize={10} />
+        <p style={{ fontFamily: 'monospace', fontSize: '10px', lineHeight: '1', margin: '0px 0' }}>
+            {importedProduct.name}
+        </p>
+        <p style={{ fontFamily: 'monospace', fontSize: '10px', lineHeight: '1', margin: '0px 0', paddingBottom: '6px' }}>
+            {importedProduct.sap_material_number}, {importedProduct.lot_number}, {importedProduct.shelf.name}
+        </p>
       </div>)
   })
 
@@ -312,6 +320,7 @@ function ImportProducts({ shelves, products, setProducts, pageTitle }) {
   ];
 
   function handleBulkPost() {
+    setImportComplete(true)
     let invalidPendingProductRecords = pendingProducts.filter((pendingProduct) => !pendingProduct.shelf.id)
 
     if (invalidPendingProductRecords.length !== 0) {
@@ -328,8 +337,8 @@ function ImportProducts({ shelves, products, setProducts, pageTitle }) {
           let allProducts = [...products, newProducts]
           setProducts(allProducts.flat())
           setImportedProducts(newProducts)
+          setBarcodeComplete(true)
         })
-      setImportComplete(true)
     }
   }
 
@@ -369,7 +378,7 @@ function ImportProducts({ shelves, products, setProducts, pageTitle }) {
         {pendingProducts.length ?
           <>
             <Col className='col-10 d-flex justify-content-end pe-0'>
-              <Button size="sm" variant='primary' disabled={!importComplete} className={!importComplete ? "custom-disabled-button" : ""} onClick={() => handleImportProductsSubmit()}>Print Imported Product Labels</Button>
+              <Button size="sm" variant='primary' disabled={!barcodeComplete} className={!barcodeComplete ? "custom-disabled-button" : ""} onClick={() => handleImportProductsSubmit()}>Print Imported Product Labels</Button>
             </Col>
             <Col className='col-2 d-flex justify-content-end ps-0'>
               <Button size="sm" variant='primary' disabled={importComplete} className={importComplete ? "custom-disabled-button" : ""} onClick={() => handleBulkPost()}>Publish Imported Records</Button>
@@ -377,7 +386,6 @@ function ImportProducts({ shelves, products, setProducts, pageTitle }) {
           </> :
           <></>
         }
-
       </Row>
 
       {/* barcode print modal */}
